@@ -55,12 +55,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
                 git_commit="0977b1171484b61eb1fb4e1ca2dc1fd0a989a8b0",
             ),
          },
-         {
-            'type': metadata_base.PrimitiveInstallationType.FILE,
-            'key': 'wiki2vec',
-            'file_uri': 'embeddings/wiki2vec/en.model',
-            'file_digest': '6bdf72f703a504cd02d7c3efc6c67cbbaf506e1cbd9530937db6a698b330242e',
-        }],
+        ],
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.distil.duke',
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
