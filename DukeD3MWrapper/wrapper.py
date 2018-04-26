@@ -52,7 +52,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
          'installation': [{
             'type': metadata_base.PrimitiveInstallationType.PIP,
             'package_uri': 'git+https://github.com/NewKnowledge/duke-d3m-wrapper.git@{git_commit}#egg=DukeD3MWrapper'.format(
-                git_commit="0977b1171484b61eb1fb4e1ca2dc1fd0a989a8b0",
+                git_commit="b641c7863e1f3721d037fb88499007862cf4518b",
             ),
          },
         ],
