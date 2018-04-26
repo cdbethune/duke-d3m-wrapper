@@ -56,7 +56,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
             ),
          },
          {
-            'type': metadata_module.PrimitiveInstallationType.FILE,
+            'type': metadata_base.PrimitiveInstallationType.FILE,
             'key': 'wiki2vec',
             'file_uri': 'embeddings/wiki2vec/en.model',
             'file_digest': '6bdf72f703a504cd02d7c3efc6c67cbbaf506e1cbd9530937db6a698b330242e',
