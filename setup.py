@@ -5,10 +5,8 @@ setup(name='DukeD3MWrapper',
     description='A wrapper for integrating Duke into the D3M environment',
     packages=['DukeD3MWrapper'],
     install_requires=["numpy",
-        "pandas",
         "requests",
         "typing",
-        "gensim",
         "Duke==1.2.0"],
     dependency_links=[
         "git+https://github.com/NewKnowledge/duke@88b76798b40c751680946959342d1835ca864508#egg=Duke-1.2.0"
