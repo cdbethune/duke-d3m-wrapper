@@ -8,10 +8,9 @@ import typing
 from json import JSONDecoder
 from typing import List
 
-from Simon import *
-from Simon.Encoder import *
-from Simon.DataGenerator import *
-from Simon.LengthStandardizer import *
+from Duke.agg_functions import *
+from Duke.dataset_descriptor import DatasetDescriptor
+from Duke.utils import mean_of_rows
 
 from d3m.primitive_interfaces.base import PrimitiveBase, CallResult
 
@@ -22,7 +21,7 @@ __author__ = 'Distil'
 __version__ = '1.1.0'
 
 Inputs = container.pandas.DataFrame
-Outputs = container.List[container.List[str]]
+Outputs =container.List[str]
 
 class Params(params.Params):
     pass
@@ -31,19 +30,19 @@ class Params(params.Params):
 class Hyperparams(hyperparams.Hyperparams):
     pass
 
-class simon(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     metadata = metadata_base.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
-        'id': "d2fa8df2-6517-3c26-bafc-87b701c4043a",
+        'id': "46612a42-6120-3559-9db9-3aa9a76eb94f",
         'version': __version__,
-        'name': "simon",
+        'name': "duke",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['Data Type Predictor'],
+        'keywords': ['Dataset Descriptor'],
         'source': {
             'name': __author__,
             'uris': [
                 # Unstructured URIs.
-                "https://github.com/NewKnowledge/simon-d3m-wrapper",
+                "https://github.com/NewKnowledge/duke-d3m-wrapper",
             ],
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
@@ -52,16 +51,16 @@ class simon(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         # a dependency which is not on PyPi.
          'installation': [{
             'type': metadata_base.PrimitiveInstallationType.PIP,
-            'package_uri': 'git+https://github.com/NewKnowledge/simon-d3m-wrapper.git@{git_commit}#egg=SimonD3MWrapper'.format(
+            'package_uri': 'git+https://github.com/NewKnowledge/duke-d3m-wrapper.git@{git_commit}#egg=DukeD3MWrapper'.format(
                 git_commit="0977b1171484b61eb1fb4e1ca2dc1fd0a989a8b0",
             ),
         }],
         # The same path the primitive is registered with entry points in setup.py.
-        'python_path': 'd3m.primitives.distil.simon',
+        'python_path': 'd3m.primitives.distil.duke',
         # Choose these from a controlled vocabulary in the schema. If anything is missing which would
         # best describe the primitive, make a merge request.
         'algorithm_types': [
-            metadata_base.PrimitiveAlgorithmType.CONVOLUTIONAL_NEURAL_NETWORK,
+            metadata_base.PrimitiveAlgorithmType.RECURRENT_NEURAL_NETWORK,
         ],
         'primitive_family': metadata_base.PrimitiveFamily.DATA_CLEANING,
     })
@@ -86,80 +85,55 @@ class simon(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
-        Produce primitive's best guess for the structural type of each input column.
+        Produce a summary for the tabular dataset input
         
         Parameters
         ----------
         inputs : Input pandas frame
-
         Returns
         -------
         Outputs
-            The outputs is two lists of lists, each has length equal to number of columns in input pandas frame. 
-            Each entry of the first one is a list of strings corresponding to each column's multi-label classification.
-            Each entry of the second one is a list of floats corresponding to prediction probabilities.
+            The output is a string summary
         """
         
-        """ Accept a pandas data frame, predicts column types in it
+        """ Accept a pandas data frame, returns a string summary
         frame: a pandas data frame containing the data to be processed
-        -> a list of two lists of lists of 1) column labels and then 2) prediction probabilities
+        -> a string summary
         """
         
         frame = inputs
 
         try:
-            # setup model as you typically would in a Simon main file
-            maxlen = 20
-            max_cells = 500
-            p_threshold = 0.5
-        
-            DEBUG = True # boolean to specify whether or not print DEBUG information
+            dataset_path='/vectorizationdata/KnowledgeGraph2Vec/duke-dev/data/185_baseball.csv'
+            tree_path='../ontologies/class-tree_dbpedia_2016-10.json'
+            embedding_path='/vectorizationdata/KnowledgeGraph2Vec/duke-dev/embeddings/wiki2vec/en.model'
+            row_agg_func=mean_of_rows
+            tree_agg_func=parent_children_funcs(np.mean, max)
+            source_agg_func=mean_of_rows
+            max_num_samples = 1e6
+            verbose=True
 
-            checkpoint_dir = "pretrained_models/"
+            duke = DatasetDescriptor(
+                dataset=dataset_path,
+                tree=tree_path,
+                embedding=embedding_path,
+                row_agg_func=row_agg_func,
+                tree_agg_func=tree_agg_func,
+                source_agg_func=source_agg_func,
+                max_num_samples=max_num_samples,
+                verbose=verbose,
+                )
 
-            with open('Categories.txt','r') as f:
-                Categories = f.read().splitlines()
-    
-            # orient the user a bit
-            print("fixed categories are: ")
-            Categories = sorted(Categories)
-            print(Categories)
-            category_count = len(Categories)
+            print('initialized duke dataset descriptor \n')
 
-            execution_config="Base.pkl"
+            return duke.get_dataset_description()
 
-            # load specified execution configuration
-            if execution_config is None:
-                raise TypeError
-            Classifier = Simon(encoder={}) # dummy text classifier
-            
-            config = Classifier.load_config(execution_config, checkpoint_dir)
-            encoder = config['encoder']
-            checkpoint = config['checkpoint']
-
-            X = encoder.encodeDataFrame(frame)
-            
-            # build classifier model    
-            model = Classifier.generate_model(maxlen, max_cells, category_count)
-            Classifier.load_weights(checkpoint, None, model, checkpoint_dir)
-            model_compile = lambda m: m.compile(loss='categorical_crossentropy',
-                    optimizer='adam', metrics=['binary_accuracy'])
-            model_compile(model)
-            y = model.predict(X)
-            # discard empty column edge case
-            y[np.all(frame.isnull(),axis=0)]=0
-
-            result = encoder.reverse_label_encode(y,p_threshold)
-
-            return result
         except:
-            # Should probably do some more sophisticated error logging here
-            return "Failed predicting data frame"
+            return "Failed summarizing data frame"
 
 
 if __name__ == '__main__':
-    client = simon(hyperparams={})
-    # make sure to read dataframe as string!
+    client = duke(hyperparams={})
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype='str')
     frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype='str')
     result = client.produce(inputs = frame)

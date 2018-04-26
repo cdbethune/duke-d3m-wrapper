@@ -1,7 +1,7 @@
-from SimonD3MWrapper.wrapper import simon
+from DukeD3MWrapper.wrapper import duke
 
 __version__ = '1.1.0'
 
 __all__ = [
-           "simon"
+           "duke"
            ]
