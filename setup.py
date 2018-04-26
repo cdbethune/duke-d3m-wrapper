@@ -11,7 +11,7 @@ setup(name='DukeD3MWrapper',
         "gensim",
         "Duke==1.2.0"],
     dependency_links=[
-        "git+https://github.com/NewKnowledge/duke@b0703ccd8f092a25cfeb41e36298c503555e0a0f#egg=Duke-1.2.0"
+        "git+https://github.com/NewKnowledge/duke@88b76798b40c751680946959342d1835ca864508#egg=Duke-1.2.0"
     ],
     entry_points = {
         'd3m.primitives': [
