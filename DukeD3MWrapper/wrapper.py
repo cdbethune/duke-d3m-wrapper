@@ -52,9 +52,15 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
          'installation': [{
             'type': metadata_base.PrimitiveInstallationType.PIP,
             'package_uri': 'git+https://github.com/NewKnowledge/duke-d3m-wrapper.git@{git_commit}#egg=DukeD3MWrapper'.format(
-                git_commit="b8ed0d293424e3db45eec740bccc7aad3403f82f",
+                git_commit=utils.current_git_commit(os.path.dirname(__file__)),
             ),
          },
+             {
+            'type': metadata_base.PrimitiveInstallationType.FILE,
+            "key": "en.model",
+            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model",
+            "file_digest":"e974c8783b8ce9aa3e598c555a8ffa9cb5bdfe970955fed00702850b855e3257"
+        },
         ],
         # The same path the primitive is registered with entry points in setup.py.
         'python_path': 'd3m.primitives.distil.duke',
