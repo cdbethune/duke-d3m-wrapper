@@ -21,7 +21,7 @@ __author__ = 'Distil'
 __version__ = '1.1.1'
 
 Inputs = container.pandas.DataFrame
-Outputs =container.List
+Outputs = container.List
 
 class Params(params.Params):
     pass
@@ -84,7 +84,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         'primitive_family': metadata_base.PrimitiveFamily.DATA_CLEANING,
     })
     
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: dict)-> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: typing.Dict[str,str])-> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed)
                 
         self._decoder = JSONDecoder()
