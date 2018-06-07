@@ -18,7 +18,7 @@ from d3m import container, utils
 from d3m.metadata import hyperparams, base as metadata_base, params
 
 __author__ = 'Distil'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 
 Inputs = container.pandas.DataFrame
 Outputs =container.List
@@ -55,11 +55,23 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
                 git_commit=utils.current_git_commit(os.path.dirname(__file__)),
             ),
          },
-             {
-            'type': metadata_base.PrimitiveInstallationType.FILE,
+            {
+            "type": "FILE",
             "key": "en.model",
             "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model",
             "file_digest":"e974c8783b8ce9aa3e598c555a8ffa9cb5bdfe970955fed00702850b855e3257"
+        },
+        {
+            "type": "FILE",
+            "key": "en.model.syn0.npy",
+            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model.syn0.npy",
+            "file_digest":"1b30f64c99a90c16a133cf06eb4349d012de83ae915e2467b710b7b6417a9d56"
+        },
+        {
+            "type": "FILE",
+            "key": "en.model.syn1.npy",
+            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model.syn1.npy",
+            "file_digest":"aa88b503ca1472d6efd7babe42b452e21178a74df80e01a7eb253c5eff96cd50"
         },
         ],
         # The same path the primitive is registered with entry points in setup.py.
