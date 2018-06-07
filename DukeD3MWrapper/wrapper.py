@@ -84,11 +84,12 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         'primitive_family': metadata_base.PrimitiveFamily.DATA_CLEANING,
     })
     
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0)-> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: container.dict)-> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed)
                 
         self._decoder = JSONDecoder()
         self._params = {}
+        self._volumes = volumes
 
     def fit(self) -> None:
         pass
@@ -123,9 +124,8 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         frame = inputs
 
         try:
-            dataset_path='/vectorizationdata/KnowledgeGraph2Vec/duke-dev/data/185_baseball.csv'
             tree_path='../ontologies/class-tree_dbpedia_2016-10.json'
-            embedding_path='/vectorizationdata/KnowledgeGraph2Vec/duke-dev/embeddings/wiki2vec/en.model'
+            embedding_path = self._volumes['en.model']
             row_agg_func=mean_of_rows
             tree_agg_func=parent_children_funcs(np.mean, max)
             source_agg_func=mean_of_rows
@@ -133,7 +133,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
             verbose=True
 
             duke = DatasetDescriptor(
-                dataset=dataset_path,
+                dataset=frame,
                 tree=tree_path,
                 embedding=embedding_path,
                 row_agg_func=row_agg_func,
