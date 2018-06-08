@@ -84,7 +84,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         'primitive_family': metadata_base.PrimitiveFamily.DATA_CLEANING,
     })
     
-    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: typing.Dict=None)-> None:
+    def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: typing.Dict[str,str]=None)-> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, volumes=volumes)
                 
         self._decoder = JSONDecoder()
