@@ -21,7 +21,7 @@ __author__ = 'Distil'
 __version__ = '1.1.1'
 
 Inputs = container.pandas.DataFrame
-Outputs = container.List
+Outputs = container.pandas.DataFrame
 
 class Params(params.Params):
     pass
@@ -145,7 +145,11 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
             print('initialized duke dataset descriptor \n')
 
-            return duke.get_dataset_description()
+            N = 5
+            out_tuple = duke.get_top_n_words(N)
+            out_frame = pd.DataFrame.from_records(list([out_tuple[0],out_tuple[1]]),columns=['subject tags','confidences'])
+
+            return out_frame
 
         except:
             return "Failed summarizing data frame"
