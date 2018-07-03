@@ -59,7 +59,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
             "type": "TGZ",
             "key": "en.model",
             "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem.tar.gz",
-            "file_digest":"bbaabc4b1f8ee0c47ef1f665e6bd2f21efc78661db6aa65a83c3a8532fddd205"
+            "file_digest":"3b1238137bba14222ae7c718f535c68a3d7190f244296108c895f1abe8549861"
         },
         ],
         # The same path the primitive is registered with entry points in setup.py.
@@ -110,10 +110,10 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         """
         
         frame = inputs
-        print('beginning summarization... \n')
+        #print('beginning summarization... \n')
 
         try:
-            tree_path='../ontologies/class-tree_dbpedia_2016-10.json'
+            tree_path='/usr/local/lib/python3.6/dist-packages/Duke/ontologies/class-tree_dbpedia_2016-10.json'
             embedding_path = self.volumes['en.model']+"/en.model"
             row_agg_func=mean_of_rows
             tree_agg_func=parent_children_funcs(np.mean, max)
@@ -136,16 +136,20 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
             N = 5
             out_tuple = duke.get_top_n_words(N)
-            out_frame = pandas.DataFrame.from_records(list([out_tuple[0],out_tuple[1]]),columns=['subject tags','confidences'])
+            print('finished summarization \n')
+            out_df = pandas.DataFrame.from_records(list(out_tuple)).T
+            out_df.columns = ['subject tags','confidences']
 
-            return out_frame
+            return out_df
 
         except:
             return "Failed summarizing data frame"
 
 
 if __name__ == '__main__':
-    client = duke(hyperparams={})
+    volumes = {} # d3m large primitive architecture dictionary of large files
+    volumes["en.model"]='/home/wiki2vec'
+    client = duke(hyperparams={},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype='str')
     frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype='str')
     result = client.produce(inputs = frame)
