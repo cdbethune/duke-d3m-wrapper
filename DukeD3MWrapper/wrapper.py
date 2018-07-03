@@ -37,7 +37,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         'version': __version__,
         'name': "duke",
         # Keywords do not have a controlled vocabulary. Authors can put here whatever they find suitable.
-        'keywords': ['Dataset Descriptor'],
+        'keywords': ['Dataset Descriptor','Text', 'NLP','Abstractive Summarization'],
         'source': {
             'name': __author__,
             'uris': [
@@ -56,22 +56,10 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
             ),
          },
             {
-            "type": "FILE",
+            "type": "TGZ",
             "key": "en.model",
-            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model",
-            "file_digest":"e974c8783b8ce9aa3e598c555a8ffa9cb5bdfe970955fed00702850b855e3257"
-        },
-        {
-            "type": "FILE",
-            "key": "en.model.syn0.npy",
-            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model.syn0.npy",
-            "file_digest":"1b30f64c99a90c16a133cf06eb4349d012de83ae915e2467b710b7b6417a9d56"
-        },
-        {
-            "type": "FILE",
-            "key": "en.model.syn1.npy",
-            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model.syn1.npy",
-            "file_digest":"aa88b503ca1472d6efd7babe42b452e21178a74df80e01a7eb253c5eff96cd50"
+            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem.tar.gz",
+            "file_digest":"bbaabc4b1f8ee0c47ef1f665e6bd2f21efc78661db6aa65a83c3a8532fddd205"
         },
         ],
         # The same path the primitive is registered with entry points in setup.py.
@@ -89,7 +77,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
                 
         self._decoder = JSONDecoder()
         self._params = {}
-        self._volumes = volumes
+        self.volumes = volumes
 
     def fit(self) -> None:
         pass
@@ -125,7 +113,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
         try:
             tree_path='../ontologies/class-tree_dbpedia_2016-10.json'
-            embedding_path = self._volumes['en.model']
+            embedding_path = self.volumes['en.model']+"/en.model"
             row_agg_func=mean_of_rows
             tree_agg_func=parent_children_funcs(np.mean, max)
             source_agg_func=mean_of_rows
