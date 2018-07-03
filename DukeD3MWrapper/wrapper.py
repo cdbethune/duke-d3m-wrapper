@@ -110,6 +110,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         """
         
         frame = inputs
+        print('beginning summarization... \n')
 
         try:
             tree_path='../ontologies/class-tree_dbpedia_2016-10.json'
@@ -135,7 +136,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
             N = 5
             out_tuple = duke.get_top_n_words(N)
-            out_frame = pd.DataFrame.from_records(list([out_tuple[0],out_tuple[1]]),columns=['subject tags','confidences'])
+            out_frame = pandas.DataFrame.from_records(list([out_tuple[0],out_tuple[1]]),columns=['subject tags','confidences'])
 
             return out_frame
 
