@@ -114,7 +114,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
         try:
             tree_path='/usr/local/lib/python3.6/dist-packages/Duke/ontologies/class-tree_dbpedia_2016-10.json'
-            embedding_path = self.volumes['en.model']+"/en.model"
+            embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
             row_agg_func=mean_of_rows
             tree_agg_func=parent_children_funcs(np.mean, max)
             source_agg_func=mean_of_rows
