@@ -5,6 +5,7 @@ import pickle
 import requests
 import ast
 import typing
+import pkg_resources
 from json import JSONDecoder
 from typing import List
 
@@ -71,17 +72,17 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         ],
         'primitive_family': metadata_base.PrimitiveFamily.DATA_CLEANING,
     })
-    
+
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: typing.Dict[str,str]=None)-> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, volumes=volumes)
-                
+
         self._decoder = JSONDecoder()
         self._params = {}
         self.volumes = volumes
 
     def fit(self) -> None:
         pass
-    
+
     def get_params(self) -> Params:
         return self._params
 
@@ -90,11 +91,11 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
     def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
         pass
-        
+
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
         Produce a summary for the tabular dataset input
-        
+
         Parameters
         ----------
         inputs : Input pandas frame
@@ -103,48 +104,47 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         Outputs
             The output is a string summary
         """
-        
+
         """ Accept a pandas data frame, returns a string summary
         frame: a pandas data frame containing the data to be processed
         -> a string summary
         """
-        
+
         frame = inputs
         #print('beginning summarization... \n')
 
-        try:
-            tree_path='/usr/local/lib/python3.6/dist-packages/Duke/ontologies/class-tree_dbpedia_2016-10.json'
-            embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
-            row_agg_func=mean_of_rows
-            tree_agg_func=parent_children_funcs(np.mean, max)
-            source_agg_func=mean_of_rows
-            max_num_samples = 1e6
-            verbose=True
+        # get the path to the ontology class tree
+        resource_package = "Duke"
+        resource_path = '/'.join(('ontologies', 'class-tree_dbpedia_2016-10.json'))
+        tree_path = pkg_resources.resource_filename(resource_package, resource_path)
 
-            duke = DatasetDescriptor(
-                dataset=frame,
-                tree=tree_path,
-                embedding=embedding_path,
-                row_agg_func=row_agg_func,
-                tree_agg_func=tree_agg_func,
-                source_agg_func=source_agg_func,
-                max_num_samples=max_num_samples,
-                verbose=verbose,
-                )
+        embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
+        row_agg_func=mean_of_rows
+        tree_agg_func=parent_children_funcs(np.mean, max)
+        source_agg_func=mean_of_rows
+        max_num_samples = 1e6
+        verbose=True
 
-            print('initialized duke dataset descriptor \n')
+        duke = DatasetDescriptor(
+            dataset=frame,
+            tree=tree_path,
+            embedding=embedding_path,
+            row_agg_func=row_agg_func,
+            tree_agg_func=tree_agg_func,
+            source_agg_func=source_agg_func,
+            max_num_samples=max_num_samples,
+            verbose=verbose,
+            )
 
-            N = 5
-            out_tuple = duke.get_top_n_words(N)
-            print('finished summarization \n')
-            out_df = pandas.DataFrame.from_records(list(out_tuple)).T
-            out_df.columns = ['subject tags','confidences']
+        print('initialized duke dataset descriptor \n')
 
-            return out_df
+        N = 5
+        out_tuple = duke.get_top_n_words(N)
+        print('finished summarization \n')
+        out_df = pandas.DataFrame.from_records(list(out_tuple)).T
+        out_df.columns = ['subject tags','confidences']
 
-        except:
-            return "Failed summarizing data frame"
-
+        return CallResult(out_df)
 
 if __name__ == '__main__':
     volumes = {} # d3m large primitive architecture dictionary of large files
