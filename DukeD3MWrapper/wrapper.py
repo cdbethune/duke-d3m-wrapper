@@ -150,7 +150,7 @@ if __name__ == '__main__':
     volumes = {} # d3m large primitive architecture dictionary of large files
     volumes["en.model"]='/home/wiki2vec'
     client = duke(hyperparams={},volumes=volumes)
-    # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype='str')
-    frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype='str')
+    # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
+    frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
     result = client.produce(inputs = frame)
     print(result)
