@@ -33,7 +33,7 @@ class Hyperparams(hyperparams.Hyperparams):
     semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'], 
     description = 'number of records to sub-sample from the data frame')
     pass
-    
+
 class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     metadata = metadata_base.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
@@ -62,7 +62,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
             {
             "type": "TGZ",
             "key": "en.model",
-            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem.tar.gz",
+            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model",
             "file_digest":"3b1238137bba14222ae7c718f535c68a3d7190f244296108c895f1abe8549861"
         },
         ],
@@ -121,7 +121,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         resource_path = '/'.join(('ontologies', 'class-tree_dbpedia_2016-10.json'))
         tree_path = pkg_resources.resource_filename(resource_package, resource_path)
 
-        embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
+        embedding_path = self.volumes['en.model']#+"/en_1000_no_stem/en.model"
         row_agg_func=mean_of_rows
         tree_agg_func=parent_children_funcs(np.mean, max)
         source_agg_func=mean_of_rows
