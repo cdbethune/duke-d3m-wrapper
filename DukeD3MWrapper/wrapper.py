@@ -25,8 +25,9 @@ Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 class Params(params.Params):
-    pass
-
+    records = hyperparams.UniformInt(lower = 1, upper = sys.maxsize, default = 3000000, 
+    semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'], 
+    description = 'number of records to sub-sample from the data frame')
 
 class Hyperparams(hyperparams.Hyperparams):
     pass
@@ -110,8 +111,9 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         -> a string summary
         """
 
-        frame = inputs
-        #print('beginning summarization... \n')
+        # sub-sample number of records from data frame
+        records = self.hyperparams['records']
+        frame = inputs.sample(records)
 
         # get the path to the ontology class tree
         resource_package = "Duke"
