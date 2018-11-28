@@ -26,13 +26,14 @@ Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
 class Params(params.Params):
+    pass
+
+class Hyperparams(hyperparams.Hyperparams):
     records = hyperparams.UniformInt(lower = 1, upper = sys.maxsize, default = 3000000, 
     semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'], 
     description = 'number of records to sub-sample from the data frame')
-
-class Hyperparams(hyperparams.Hyperparams):
     pass
-
+    
 class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     metadata = metadata_base.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
