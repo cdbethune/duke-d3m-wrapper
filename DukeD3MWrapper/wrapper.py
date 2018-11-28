@@ -6,6 +6,7 @@ import requests
 import ast
 import typing
 import pkg_resources
+import sys
 from json import JSONDecoder
 from typing import List
 
@@ -77,7 +78,6 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: typing.Dict[str,str]=None)-> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, volumes=volumes)
 
-        self._decoder = JSONDecoder()
         self._params = {}
         self.volumes = volumes
 
