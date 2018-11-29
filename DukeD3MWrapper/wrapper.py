@@ -111,6 +111,20 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         """
 
         frame = inputs
+
+        # cast frame data type back to original, if numeric, to ensure
+        # that duke can drop them, and not skew results (since d3m
+        #  preprocessing prims turn everything into str/object)
+        for i in range(frame.value.shape[1]):
+            print("DEBUG::types:")
+            print(df.value.metadata.query_column(i)['semantic_types'][0])
+            if (df.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
+                df.value = df.value.astype({df.value.columns[i]:int})
+            elif (df.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
+                df.value = df.value.astype({df.value.columns[i]:float})
+            elif (df.value.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
+                df.value = df.value.drop(columns=[df.value.columns[i]])
+
         #print('beginning summarization... \n')
 
         # get the path to the ontology class tree
