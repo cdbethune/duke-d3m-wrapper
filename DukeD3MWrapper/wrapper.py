@@ -62,7 +62,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
             {
             "type": "TGZ",
             "key": "en.model",
-            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem/en.model",
+            "file_uri": "http://public.datadrivendiscovery.org/en_1000_no_stem.tar.gz",
             "file_digest":"3b1238137bba14222ae7c718f535c68a3d7190f244296108c895f1abe8549861"
         },
         ],
@@ -115,13 +115,15 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         # sub-sample number of records from data frame
         records = self.hyperparams['records']
         frame = inputs.sample(records)
+        print(frame.shape[0])
 
         # get the path to the ontology class tree
         resource_package = "Duke"
         resource_path = '/'.join(('ontologies', 'class-tree_dbpedia_2016-10.json'))
         tree_path = pkg_resources.resource_filename(resource_package, resource_path)
 
-        embedding_path = self.volumes['en.model']#+"/en_1000_no_stem/en.model"
+        print(self.volumes['en.model'])
+        embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
         row_agg_func=mean_of_rows
         tree_agg_func=parent_children_funcs(np.mean, max)
         source_agg_func=mean_of_rows
@@ -147,13 +149,15 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         out_df = pandas.DataFrame.from_records(list(out_tuple)).T
         out_df.columns = ['subject tags','confidences']
 
+        print(out_df)
         return CallResult(out_df)
 
 if __name__ == '__main__':
     volumes = {} # d3m large primitive architecture dictionary of large files
-    volumes["en.model"]='/home/wiki2vec'
-    client = duke(hyperparams={},volumes=volumes)
+    volumes["en.model"]='/data/home/jgleason/Downloads'
+    client = duke(hyperparams={'records':1000000},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
-    frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
+    #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
+    frame = pandas.read_csv("/data/home/jgleason/D3m/datasets/seed_datasets_current/LL1_336_MS_Geolife_transport_mode_prediction/TRAIN/dataset_TRAIN/tables/learningData.csv",dtype=str)
     result = client.produce(inputs = frame)
     print(result)
