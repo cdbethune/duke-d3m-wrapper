@@ -29,9 +29,9 @@ class Params(params.Params):
     pass
 
 class Hyperparams(hyperparams.Hyperparams):
-    records = hyperparams.UniformInt(lower = 1, upper = sys.maxsize, default = 1884126, 
+    records = hyperparams.Uniform(lower = 0, upper = 1, default = 1, upper_inclusive = True,
     semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'], 
-    description = 'number of records to sub-sample from the data frame')
+    description = 'percentage of records to sub-sample from the data frame')
     pass
 
 class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
@@ -112,7 +112,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         -> a string summary
         """
 
-        # sub-sample number of records from data frame
+        # sub-sample percentage of records from data frame
         records = self.hyperparams['records']
         frame = inputs.sample(records)
         print(frame.shape[0])
@@ -155,7 +155,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 if __name__ == '__main__':
     volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
     volumes["en.model"]='/data/home/jgleason/D3m/en_1000_no_stem/'
-    client = duke(hyperparams={'records':1000},volumes=volumes)#1884126
+    client = duke(hyperparams={'records':0.3},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
     #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
     frame = pandas.read_csv("/data/home/jgleason/D3m/datasets/seed_datasets_current/LL1_336_MS_Geolife_transport_mode_prediction/TRAIN/dataset_TRAIN/tables/learningData.csv",dtype=str)
