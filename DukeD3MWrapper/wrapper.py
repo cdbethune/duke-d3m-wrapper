@@ -116,7 +116,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         #records = self.hyperparams['records']
         #frame = inputs.sample(records)
         frame = inputs
-        #print(frame.shape[0])
+        print(frame.shape[0])
 
         # get the path to the ontology class tree
         resource_package = "Duke"
