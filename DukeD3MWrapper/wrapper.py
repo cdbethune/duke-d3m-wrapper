@@ -123,7 +123,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         tree_path = pkg_resources.resource_filename(resource_package, resource_path)
 
         print(self.volumes['en.model'])
-        embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
+        embedding_path = self.volumes['en.model']#+"/en_1000_no_stem/en.model"
         row_agg_func=mean_of_rows
         tree_agg_func=parent_children_funcs(np.mean, max)
         source_agg_func=mean_of_rows
@@ -155,7 +155,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 if __name__ == '__main__':
     volumes = {} # d3m large primitive architecture dictionary of large files
     volumes["en.model"]='/data/home/jgleason/Downloads'
-    client = duke(hyperparams={'records':1000000},volumes=volumes)
+    client = duke(hyperparams={'records':1000#1884126},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
     #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
     frame = pandas.read_csv("/data/home/jgleason/D3m/datasets/seed_datasets_current/LL1_336_MS_Geolife_transport_mode_prediction/TRAIN/dataset_TRAIN/tables/learningData.csv",dtype=str)
