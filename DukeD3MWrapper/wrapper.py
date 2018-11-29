@@ -153,9 +153,9 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         return CallResult(out_df)
 
 if __name__ == '__main__':
-    volumes = {} # d3m large primitive architecture dictionary of large files
-    volumes["en.model"]='/data/home/jgleason/Downloads'
-    client = duke(hyperparams={'records':1000#1884126},volumes=volumes)
+    volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
+    volumes["en.model"]='/data/home/jgleason/D3m/en_1000_no_stem/'
+    client = duke(hyperparams={'records':1000},volumes=volumes)#1884126
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
     #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
     frame = pandas.read_csv("/data/home/jgleason/D3m/datasets/seed_datasets_current/LL1_336_MS_Geolife_transport_mode_prediction/TRAIN/dataset_TRAIN/tables/learningData.csv",dtype=str)
