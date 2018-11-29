@@ -113,9 +113,10 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         """
 
         # sub-sample number of records from data frame
-        records = self.hyperparams['records']
-        frame = inputs.sample(records)
-        print(frame.shape[0])
+        #records = self.hyperparams['records']
+        #frame = inputs.sample(records)
+        frame = inputs
+        #print(frame.shape[0])
 
         # get the path to the ontology class tree
         resource_package = "Duke"
