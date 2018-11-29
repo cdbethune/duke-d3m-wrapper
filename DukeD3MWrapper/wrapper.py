@@ -117,13 +117,13 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         #  preprocessing prims turn everything into str/object)
         for i in range(frame.value.shape[1]):
             print("DEBUG::types:")
-            print(df.value.metadata.query_column(i)['semantic_types'][0])
-            if (df.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
-                df.value = df.value.astype({df.value.columns[i]:int})
-            elif (df.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
-                df.value = df.value.astype({df.value.columns[i]:float})
-            elif (df.value.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
-                df.value = df.value.drop(columns=[df.value.columns[i]])
+            print(frame.value.metadata.query_column(i)['semantic_types'][0])
+            if (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
+                frame.value = frame.value.astype({frame.value.columns[i]:int})
+            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
+                frame.value = frame.value.astype({frame.value.columns[i]:float})
+            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
+                frame.value = frame.value.drop(columns=[frame.value.columns[i]])
 
         #print('beginning summarization... \n')
 
