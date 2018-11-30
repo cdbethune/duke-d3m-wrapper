@@ -20,7 +20,7 @@ from d3m import container, utils
 from d3m.metadata import hyperparams, base as metadata_base, params
 
 __author__ = 'Distil'
-__version__ = '1.1.1'
+__version__ = '1.1.2'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -120,17 +120,21 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         # cast frame data type back to original, if numeric, to ensure
         # that duke can drop them, and not skew results (since d3m
         #  preprocessing prims turn everything into str/object)
+        tmp = frame.values
         for i in range(frame.values.shape[1]):
-            print("DEBUG::types:")
-            print(frame.values.metadata.query_column(i)['semantic_types'][0])
             if (frame.values.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
-                frame.values = frame.values.astype({frame.values.columns[i]:int})
+                tmp.ix[:,frame.values.columns[i]].replace('',0,inplace=True)
+                tmp = tmp.astype({frame.values.columns[i]:int})
             elif (frame.values.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
-                frame.values = frame.values.astype({frame.values.columns[i]:float})
+                tmp.ix[:,frame.values.columns[i]].replace('',0,inplace=True)
+                tmp = tmp.astype({frame.values.columns[i]:float})
+            # not yet sure if dropping CategoticalData is ideal, but it appears to work...
+            # some categorical data may contain useful information, but the d3m transformation is not reversible
+            # and not aware of a way to distinguish numerical from non-numerical CategoricalData
             elif (frame.values.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
-                frame.values = frame.values.drop(columns=[frame.values.columns[i]])
+                tmp = tmp.drop(columns=[frame.values.columns[i]])
 
-        #print('beginning summarization... \n')
+        # print('beginning summarization... \n')
 
         # get the path to the ontology class tree
         resource_package = "Duke"
@@ -146,7 +150,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         verbose=True
 
         duke = DatasetDescriptor(
-            dataset=frame,
+            dataset=tmp,
             tree=tree_path,
             embedding=embedding_path,
             row_agg_func=row_agg_func,
