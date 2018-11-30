@@ -114,22 +114,21 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
         # sub-sample percentage of records from data frame
         records = self.hyperparams['records']
-        frame = inputs.sample(records)
-        print(frame.shape[0])
-
+        frame = inputs.sample(frac = records)
+        print(frame.shape)
 
         # cast frame data type back to original, if numeric, to ensure
         # that duke can drop them, and not skew results (since d3m
         #  preprocessing prims turn everything into str/object)
-        for i in range(frame.value.shape[1]):
+        for i in range(frame.values.shape[1]):
             print("DEBUG::types:")
-            print(frame.value.metadata.query_column(i)['semantic_types'][0])
-            if (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
-                frame.value = frame.value.astype({frame.value.columns[i]:int})
-            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
-                frame.value = frame.value.astype({frame.value.columns[i]:float})
-            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
-                frame.value = frame.value.drop(columns=[frame.value.columns[i]])
+            print(frame.values.metadata.query_column(i)['semantic_types'][0])
+            if (frame.values.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
+                frame.values = frame.values.astype({frame.values.columns[i]:int})
+            elif (frame.values.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
+                frame.values = frame.values.astype({frame.values.columns[i]:float})
+            elif (frame.values.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
+                frame.values = frame.values.drop(columns=[frame.values.columns[i]])
 
         #print('beginning summarization... \n')
 
@@ -170,10 +169,9 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
 if __name__ == '__main__':
     volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
-    volumes["en.model"]='/data/home/jgleason/D3m/en_1000_no_stem/'
+    volumes["en.model"]='/home/wiki2vec'
     client = duke(hyperparams={'records':0.3},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
-    #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
-    frame = pandas.read_csv("/data/home/jgleason/D3m/datasets/seed_datasets_current/LL1_336_MS_Geolife_transport_mode_prediction/TRAIN/dataset_TRAIN/tables/learningData.csv",dtype=str)
+    frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
     result = client.produce(inputs = frame)
     print(result)
