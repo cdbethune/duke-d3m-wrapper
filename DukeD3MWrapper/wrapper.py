@@ -115,24 +115,23 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         # sub-sample percentage of records from data frame
         records = self.hyperparams['records']
         frame = inputs.sample(frac = records)
-        print(frame.shape)
 
         # cast frame data type back to original, if numeric, to ensure
         # that duke can drop them, and not skew results (since d3m
         #  preprocessing prims turn everything into str/object)
-        tmp = frame.values
-        for i in range(frame.values.shape[1]):
-            if (frame.values.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
-                tmp.ix[:,frame.values.columns[i]].replace('',0,inplace=True)
-                tmp = tmp.astype({frame.values.columns[i]:int})
-            elif (frame.values.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
-                tmp.ix[:,frame.values.columns[i]].replace('',0,inplace=True)
-                tmp = tmp.astype({frame.values.columns[i]:float})
+        tmp = frame.value
+        for i in range(frame.value.shape[1]):
+            if (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
+                tmp.ix[:,frame.value.columns[i]].replace('',0,inplace=True)
+                tmp = tmp.astype({frame.valuecolumns[i]:int})
+            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
+                tmp.ix[:,frame.value.columns[i]].replace('',0,inplace=True)
+                tmp = tmp.astype({frame.value.columns[i]:float})
             # not yet sure if dropping CategoticalData is ideal, but it appears to work...
             # some categorical data may contain useful information, but the d3m transformation is not reversible
             # and not aware of a way to distinguish numerical from non-numerical CategoricalData
-            elif (frame.values.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
-                tmp = tmp.drop(columns=[frame.values.columns[i]])
+            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
+                tmp = tmp.drop(columns=[frame.value.columns[i]])
 
         # print('beginning summarization... \n')
 
