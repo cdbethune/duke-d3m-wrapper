@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
     volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
     volumes["en.model"]='/home/en.model'
-    duke_client = duke(hyperparams={},volumes=volumes)
+    duke_client = duke(hyperparams={'records'},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
     #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
     result = duke_client.produce(inputs = df)
