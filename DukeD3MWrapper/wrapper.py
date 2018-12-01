@@ -116,6 +116,8 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         """
 
         # sub-sample percentage of records from data frame
+        print(self.hyperparams)
+        print(not self.hyperparams)
         if not self.hyperparams:
             self.hyperparams['records'] = 1
         records = self.hyperparams['records']
