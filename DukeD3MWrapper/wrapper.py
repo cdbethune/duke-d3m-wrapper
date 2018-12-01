@@ -120,7 +120,6 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
             self.hyperparams['records'] = 1
         records = self.hyperparams['records']
         frame = inputs.value.sample(frac = records)
-        print(frame.shape)
 
         # cast frame data type back to original, if numeric, to ensure
         # that duke can drop them, and not skew results (since d3m
@@ -145,8 +144,6 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         resource_package = "Duke"
         resource_path = '/'.join(('ontologies', 'class-tree_dbpedia_2016-10.json'))
         tree_path = pkg_resources.resource_filename(resource_package, resource_path)
-
-        print(self.volumes['en.model'])
         embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
         row_agg_func=mean_of_rows
         tree_agg_func=parent_children_funcs(np.mean, max)
@@ -173,7 +170,6 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         out_df = pandas.DataFrame.from_records(list(out_tuple)).T
         out_df.columns = ['subject tags','confidences']
 
-        print(out_df)
         return CallResult(out_df)
 
 if __name__ == '__main__':
