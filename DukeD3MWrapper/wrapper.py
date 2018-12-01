@@ -6,7 +6,6 @@ import requests
 import ast
 import typing
 import pkg_resources
-import sys
 from json import JSONDecoder
 from typing import List
 
@@ -18,6 +17,10 @@ from d3m.primitive_interfaces.base import PrimitiveBase, CallResult
 
 from d3m import container, utils
 from d3m.metadata import hyperparams, base as metadata_base, params
+from d3m.primitives.datasets import DatasetToDataFrame
+
+import common_primitives
+from common_primitives import column_parser
 
 __author__ = 'Distil'
 __version__ = '1.1.2'
@@ -114,6 +117,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
         # sub-sample percentage of records from data frame
         records = self.hyperparams['records']
+        print(records)
         frame = inputs.sample(frac = records)
 
         # cast frame data type back to original, if numeric, to ensure
@@ -123,7 +127,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         for i in range(frame.value.shape[1]):
             if (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
                 tmp.ix[:,frame.value.columns[i]].replace('',0,inplace=True)
-                tmp = tmp.astype({frame.valuecolumns[i]:int})
+                tmp = tmp.astype({frame.value.columns[i]:int})
             elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
                 tmp.ix[:,frame.value.columns[i]].replace('',0,inplace=True)
                 tmp = tmp.astype({frame.value.columns[i]:float})
@@ -171,10 +175,15 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         return CallResult(out_df)
 
 if __name__ == '__main__':
+    # LOAD DATA AND PREPROCESSING
+    input_dataset = container.Dataset.load('file:///home/196_autoMpg/196_autoMpg_dataset/datasetDoc.json')
+    ds2df_client = DatasetToDataFrame(hyperparams={"dataframe_resource":"0"})
+    df = ds2df_client.produce(inputs=input_dataset)
+
     volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
-    volumes["en.model"]='/home/wiki2vec'
-    client = duke(hyperparams={'records':0.3},volumes=volumes)
+    volumes["en.model"]='/home/en.model'
+    duke_client = duke(hyperparams={},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
-    frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
-    result = client.produce(inputs = frame)
+    #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
+    result = client.produce(inputs = df)
     print(result)
