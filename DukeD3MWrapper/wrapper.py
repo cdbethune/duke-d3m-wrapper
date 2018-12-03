@@ -19,8 +19,6 @@ from d3m import container, utils
 from d3m.metadata import hyperparams, base as metadata_base, params
 from d3m.primitives.datasets import DatasetToDataFrame
 
-from common_primitives import column_parser
-
 __author__ = 'Distil'
 __version__ = '1.1.2'
 
