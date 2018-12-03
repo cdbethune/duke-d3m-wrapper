@@ -17,6 +17,9 @@ from d3m.primitive_interfaces.base import PrimitiveBase, CallResult
 
 from d3m import container, utils
 from d3m.metadata import hyperparams, base as metadata_base, params
+from d3m.primitives.datasets import DatasetToDataFrame
+
+from common_primitives import column_parser
 
 __author__ = 'Distil'
 __version__ = '1.1.2'
@@ -27,8 +30,10 @@ Outputs = container.pandas.DataFrame
 class Params(params.Params):
     pass
 
-
 class Hyperparams(hyperparams.Hyperparams):
+    records = hyperparams.Uniform(lower = 0, upper = 1, default = 1, upper_inclusive = True,
+    semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'], 
+    description = 'percentage of records to sub-sample from the data frame')
     pass
 
 class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
@@ -76,7 +81,6 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: typing.Dict[str,str]=None)-> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, volumes=volumes)
 
-        self._decoder = JSONDecoder()
         self._params = {}
         self.volumes = volumes
 
@@ -110,24 +114,28 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         -> a string summary
         """
 
-        frame = inputs
+        # sub-sample percentage of records from data frame
+        if not self.hyperparams:
+            self.hyperparams['records'] = 1
+        records = self.hyperparams['records']
+        frame = inputs.value.sample(frac = records)
 
         # cast frame data type back to original, if numeric, to ensure
         # that duke can drop them, and not skew results (since d3m
         #  preprocessing prims turn everything into str/object)
-        tmp = frame.value
-        for i in range(frame.value.shape[1]):
-            if (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
-                tmp.ix[:,frame.value.columns[i]].replace('',0,inplace=True)
-                tmp = tmp.astype({frame.value.columns[i]:int})
-            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
-                tmp.ix[:,frame.value.columns[i]].replace('',0,inplace=True)
-                tmp = tmp.astype({frame.value.columns[i]:float})
+        tmp = frame
+        for i in range(frame.shape[1]):
+            if (frame.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
+                tmp.ix[:,frame.columns[i]].replace('',0,inplace=True)
+                tmp = tmp.astype({frame.columns[i]:int})
+            elif (frame.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
+                tmp.ix[:,frame.columns[i]].replace('',0,inplace=True)
+                tmp = tmp.astype({frame.columns[i]:float})
             # not yet sure if dropping CategoticalData is ideal, but it appears to work...
             # some categorical data may contain useful information, but the d3m transformation is not reversible
             # and not aware of a way to distinguish numerical from non-numerical CategoricalData
-            elif (frame.value.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
-                tmp = tmp.drop(columns=[frame.value.columns[i]])
+            elif (frame.metadata.query_column(i)['semantic_types'][0]=='https://metadata.datadrivendiscovery.org/types/CategoricalData'):
+                tmp = tmp.drop(columns=[frame.columns[i]])
 
         # print('beginning summarization... \n')
 
@@ -135,7 +143,6 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         resource_package = "Duke"
         resource_path = '/'.join(('ontologies', 'class-tree_dbpedia_2016-10.json'))
         tree_path = pkg_resources.resource_filename(resource_package, resource_path)
-
         embedding_path = self.volumes['en.model']+"/en_1000_no_stem/en.model"
         row_agg_func=mean_of_rows
         tree_agg_func=parent_children_funcs(np.mean, max)
@@ -165,10 +172,15 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         return CallResult(out_df)
 
 if __name__ == '__main__':
-    volumes = {} # d3m large primitive architecture dictionary of large files
-    volumes["en.model"]='/home/wiki2vec'
-    client = duke(hyperparams={},volumes=volumes)
+    # LOAD DATA AND PREPROCESSING
+    input_dataset = container.Dataset.load('file:///home/196_autoMpg/196_autoMpg_dataset/datasetDoc.json')
+    ds2df_client = DatasetToDataFrame(hyperparams={"dataframe_resource":"0"})
+    df = ds2df_client.produce(inputs=input_dataset)
+
+    volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
+    volumes["en.model"]='/home/en.model'
+    duke_client = duke(hyperparams={},volumes=volumes)
     # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
-    frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
-    result = client.produce(inputs = frame)
+    #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
+    result = duke_client.produce(inputs = df)
     print(result)
