@@ -30,7 +30,7 @@ class Params(params.Params):
 
 class Hyperparams(hyperparams.Hyperparams):
     records = hyperparams.Uniform(lower = 0, upper = 1, default = 1, upper_inclusive = True,
-    semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'], 
+    semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'],
     description = 'percentage of records to sub-sample from the data frame')
     pass
 
@@ -116,7 +116,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         if not self.hyperparams:
             self.hyperparams['records'] = 1
         records = self.hyperparams['records']
-        frame = inputs.value.sample(frac = records)
+        frame = inputs.sample(frac = records)
 
         # cast frame data type back to original, if numeric, to ensure
         # that duke can drop them, and not skew results (since d3m
@@ -125,6 +125,9 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         for i in range(frame.shape[1]):
             if (frame.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
                 tmp.ix[:,frame.columns[i]].replace('',0,inplace=True)
+                # converting a string value like '32.0' to an int directly results in an error, so we first
+                # convert everything to a float
+                tmp = tmp.astype({frame.columns[i]:float})
                 tmp = tmp.astype({frame.columns[i]:int})
             elif (frame.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
                 tmp.ix[:,frame.columns[i]].replace('',0,inplace=True)
