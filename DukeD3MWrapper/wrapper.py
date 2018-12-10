@@ -20,7 +20,7 @@ from d3m.metadata import hyperparams, base as metadata_base, params
 from d3m.primitives.datasets import DatasetToDataFrame
 
 __author__ = 'Distil'
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
