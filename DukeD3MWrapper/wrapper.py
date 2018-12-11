@@ -177,11 +177,10 @@ if __name__ == '__main__':
     input_dataset = container.Dataset.load('file:///home/196_autoMpg/196_autoMpg_dataset/datasetDoc.json')
     ds2df_client = DatasetToDataFrame(hyperparams={"dataframe_resource":"0"})
     df = ds2df_client.produce(inputs=input_dataset)
-
     volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
     volumes["en.model"]='/home/en.model'
     duke_client = duke(hyperparams={},volumes=volumes)
-    # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
+    #frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
     #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
-    result = duke_client.produce(inputs = df)
-    print(result)
+    result = duke_client.produce(inputs = df.value)
+    print(result.value)
