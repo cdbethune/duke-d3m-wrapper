@@ -196,7 +196,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
 
         print("DEBUG::")
-        print(duke_df.value)
+        print(duke_df)
 
 
 
