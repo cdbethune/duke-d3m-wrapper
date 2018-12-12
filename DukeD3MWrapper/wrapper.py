@@ -20,7 +20,7 @@ from d3m.container import DataFrame as d3m_DataFrame
 from d3m.metadata import hyperparams, base as metadata_base, params
 from d3m.primitives.datasets import DatasetToDataFrame
 
-from common_primitives import utils_cp
+from common_primitives import utils as utils_cp
 
 __author__ = 'Distil'
 __version__ = '1.1.3'
