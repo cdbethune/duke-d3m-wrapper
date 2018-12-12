@@ -20,6 +20,8 @@ from d3m.container import DataFrame as d3m_DataFrame
 from d3m.metadata import hyperparams, base as metadata_base, params
 from d3m.primitives.datasets import DatasetToDataFrame
 
+from common_primitives import utils_cp
+
 __author__ = 'Distil'
 __version__ = '1.1.3'
 
@@ -195,12 +197,10 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         # concatenate final output frame
 
 
+        out_df = utils_cp.append_columns(out_df, duke_df)
+
         print("DEBUG::")
         print(duke_df)
-
-
-
-        out_df = utils.append_columns(out_df, duke_df)
 
 
         return CallResult(out_df)
