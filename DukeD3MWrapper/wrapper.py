@@ -191,11 +191,13 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         col_dict['semantic_types'] = ('http://schema.org/Float', 'https://metadata.datadrivendiscovery.org/types/Attribute')
         duke_df.metadata = duke_df.metadata.update((metadata_base.ALL_ELEMENTS, 1), col_dict)
         # concatenate is --VERY-- slow without this next line
-        duke_df.index = out_df.index.copy()
+        # duke_df.index = out_df.index.copy()
         # concatenate final output frame
         out_df = utils.append_columns(out_df, duke_df)
 
-        
+
+        print("DEBUG::")
+        print(out_df.value)
 
 
 
