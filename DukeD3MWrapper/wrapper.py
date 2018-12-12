@@ -174,10 +174,9 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         out_df_duke.columns = ['subject tags','confidences']
 
 
-
-        
         # initialize the output dataframe as input dataframe (results will be appended to it)
         out_df = d3m_DataFrame(inputs)
+
         # create metadata for the duke output dataframe
         duke_df = d3m_DataFrame(out_df_duke)
         # first column ('subject tags')
@@ -192,15 +191,9 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         col_dict['name'] = "confidences"
         col_dict['semantic_types'] = ('http://schema.org/Float', 'https://metadata.datadrivendiscovery.org/types/Attribute')
         duke_df.metadata = duke_df.metadata.update((metadata_base.ALL_ELEMENTS, 1), col_dict)
-        # concatenate is --VERY-- slow without this next line
-        # duke_df.index = out_df.index.copy()
+        
         # concatenate final output frame
-
-
         out_df = utils_cp.append_columns(out_df, duke_df)
-
-        print("DEBUG::")
-        print(duke_df)
 
 
         return CallResult(out_df)
