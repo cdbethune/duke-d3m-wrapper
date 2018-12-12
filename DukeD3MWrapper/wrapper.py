@@ -16,6 +16,7 @@ from Duke.utils import mean_of_rows
 from d3m.primitive_interfaces.base import PrimitiveBase, CallResult
 
 from d3m import container, utils
+from d3m.container import DataFrame as d3m_DataFrame
 from d3m.metadata import hyperparams, base as metadata_base, params
 from d3m.primitives.datasets import DatasetToDataFrame
 
@@ -167,8 +168,36 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         N = 5
         out_tuple = duke.get_top_n_words(N)
         print('finished summarization \n')
-        out_df = pandas.DataFrame.from_records(list(out_tuple)).T
-        out_df.columns = ['subject tags','confidences']
+        out_df_duke = pandas.DataFrame.from_records(list(out_tuple)).T
+        out_df_duke.columns = ['subject tags','confidences']
+
+
+
+        
+        # initialize the output dataframe as input dataframe (results will be appended to it)
+        out_df = d3m_DataFrame(inputs)
+        # create metadata for the duke output dataframe
+        duke_df = d3m_DataFrame(out_df_duke)
+        # first column ('subject tags')
+        col_dict = dict(duke_df.metadata.query((metadata_base.ALL_ELEMENTS, 0)))
+        col_dict['structural_type'] = type("it is a string")
+        col_dict['name'] = "subject tags"
+        col_dict['semantic_types'] = ('http://schema.org/Text', 'https://metadata.datadrivendiscovery.org/types/Attribute')
+        duke_df.metadata = duke_df.metadata.update((metadata_base.ALL_ELEMENTS, 0), col_dict)
+         # second column ('confidences')
+        col_dict = dict(duke_df.metadata.query((metadata_base.ALL_ELEMENTS, 1)))
+        col_dict['structural_type'] = type("1.0")
+        col_dict['name'] = "confidences"
+        col_dict['semantic_types'] = ('http://schema.org/Float', 'https://metadata.datadrivendiscovery.org/types/Attribute')
+        duke_df.metadata = duke_df.metadata.update((metadata_base.ALL_ELEMENTS, 1), col_dict)
+        # concatenate is --VERY-- slow without this next line
+        duke_df.index = out_df.index.copy()
+        # concatenate final output frame
+        out_df = utils.append_columns(out_df, duke_df)
+
+        
+
+
 
         return CallResult(out_df)
 
