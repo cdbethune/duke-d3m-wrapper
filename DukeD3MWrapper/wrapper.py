@@ -193,12 +193,14 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         # concatenate is --VERY-- slow without this next line
         # duke_df.index = out_df.index.copy()
         # concatenate final output frame
-        out_df = utils.append_columns(out_df, duke_df)
 
 
         print("DEBUG::")
-        print(out_df.value)
+        print(duke_df.value)
 
+
+
+        out_df = utils.append_columns(out_df, duke_df)
 
 
         return CallResult(out_df)
