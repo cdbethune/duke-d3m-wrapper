@@ -16,8 +16,11 @@ from Duke.utils import mean_of_rows
 from d3m.primitive_interfaces.base import PrimitiveBase, CallResult
 
 from d3m import container, utils
+from d3m.container import DataFrame as d3m_DataFrame
 from d3m.metadata import hyperparams, base as metadata_base, params
 from d3m.primitives.datasets import DatasetToDataFrame
+
+from common_primitives import utils as utils_cp
 
 __author__ = 'Distil'
 __version__ = '1.1.3'
@@ -167,21 +170,43 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         N = 5
         out_tuple = duke.get_top_n_words(N)
         print('finished summarization \n')
-        out_df = pandas.DataFrame.from_records(list(out_tuple)).T
-        out_df.columns = ['subject tags','confidences']
+        out_df_duke = pandas.DataFrame.from_records(list(out_tuple)).T
+        out_df_duke.columns = ['subject tags','confidences']
 
-        return CallResult(out_df)
+
+        # initialize the output dataframe as input dataframe (results will be appended to it)
+        # out_df = d3m_DataFrame(inputs)
+
+        # create metadata for the duke output dataframe
+        duke_df = d3m_DataFrame(out_df_duke)
+        # first column ('subject tags')
+        col_dict = dict(duke_df.metadata.query((metadata_base.ALL_ELEMENTS, 0)))
+        col_dict['structural_type'] = type("it is a string")
+        col_dict['name'] = "subject tags"
+        col_dict['semantic_types'] = ('http://schema.org/Text', 'https://metadata.datadrivendiscovery.org/types/Attribute')
+        duke_df.metadata = duke_df.metadata.update((metadata_base.ALL_ELEMENTS, 0), col_dict)
+         # second column ('confidences')
+        col_dict = dict(duke_df.metadata.query((metadata_base.ALL_ELEMENTS, 1)))
+        col_dict['structural_type'] = type("1.0")
+        col_dict['name'] = "confidences"
+        col_dict['semantic_types'] = ('http://schema.org/Float', 'https://metadata.datadrivendiscovery.org/types/Attribute')
+        duke_df.metadata = duke_df.metadata.update((metadata_base.ALL_ELEMENTS, 1), col_dict)
+        
+        # concatenate final output frame -- not real consensus from program, so commenting out for now
+        #out_df = utils_cp.append_columns(out_df, duke_df)
+
+
+        return CallResult(duke_df)
 
 if __name__ == '__main__':
     # LOAD DATA AND PREPROCESSING
     input_dataset = container.Dataset.load('file:///home/196_autoMpg/196_autoMpg_dataset/datasetDoc.json')
     ds2df_client = DatasetToDataFrame(hyperparams={"dataframe_resource":"0"})
     df = ds2df_client.produce(inputs=input_dataset)
-
     volumes = {} # d3m large primitive architecture Downloadsdictionary of large files
     volumes["en.model"]='/home/en.model'
     duke_client = duke(hyperparams={},volumes=volumes)
-    # frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
+    #frame = pandas.read_csv("https://query.data.world/s/10k6mmjmeeu0xlw5vt6ajry05",dtype=str)
     #frame = pandas.read_csv("https://s3.amazonaws.com/d3m-data/merged_o_data/o_4550_merged.csv",dtype=str)
-    result = duke_client.produce(inputs = df)
-    print(result)
+    result = duke_client.produce(inputs = df.value)
+    print(result.value)
