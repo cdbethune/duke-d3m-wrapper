@@ -175,7 +175,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
 
 
         # initialize the output dataframe as input dataframe (results will be appended to it)
-        out_df = d3m_DataFrame(inputs)
+        # out_df = d3m_DataFrame(inputs)
 
         # create metadata for the duke output dataframe
         duke_df = d3m_DataFrame(out_df_duke)
@@ -192,11 +192,11 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
         col_dict['semantic_types'] = ('http://schema.org/Float', 'https://metadata.datadrivendiscovery.org/types/Attribute')
         duke_df.metadata = duke_df.metadata.update((metadata_base.ALL_ELEMENTS, 1), col_dict)
         
-        # concatenate final output frame
-        out_df = utils_cp.append_columns(out_df, duke_df)
+        # concatenate final output frame -- not real consensus from program, so commenting out for now
+        #out_df = utils_cp.append_columns(out_df, duke_df)
 
 
-        return CallResult(out_df)
+        return CallResult(duke_df)
 
 if __name__ == '__main__':
     # LOAD DATA AND PREPROCESSING
