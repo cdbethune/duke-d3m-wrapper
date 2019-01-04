@@ -29,9 +29,6 @@ __version__ = '1.1.4'
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
 
-class Params(params.Params):
-    pass
-
 class Hyperparams(hyperparams.Hyperparams):
     records = hyperparams.Uniform(lower = 0, upper = 1, default = 1, upper_inclusive = True,
     semantic_types = ['https://metadata.datadrivendiscovery.org/types/TuningParameter'],
