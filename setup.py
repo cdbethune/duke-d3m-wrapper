@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(name='DukeD3MWrapper',
-    version='1.1.3',
+    version='1.1.4',
     description='A wrapper for integrating Duke into the D3M environment',
     packages=['DukeD3MWrapper'],
     install_requires=["numpy",

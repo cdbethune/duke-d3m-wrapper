@@ -13,17 +13,18 @@ from Duke.agg_functions import *
 from Duke.dataset_descriptor import DatasetDescriptor
 from Duke.utils import mean_of_rows
 
-from d3m.primitive_interfaces.base import PrimitiveBase, CallResult
+from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
+from d3m.primitive_interfaces.base import CallResult
 
 from d3m import container, utils
 from d3m.container import DataFrame as d3m_DataFrame
-from d3m.metadata import hyperparams, base as metadata_base, params
+from d3m.metadata import hyperparams, base as metadata_base
 from d3m.primitives.datasets import DatasetToDataFrame
 
 from common_primitives import utils as utils_cp
 
 __author__ = 'Distil'
-__version__ = '1.1.3'
+__version__ = '1.1.4'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
@@ -37,7 +38,7 @@ class Hyperparams(hyperparams.Hyperparams):
     description = 'percentage of records to sub-sample from the data frame')
     pass
 
-class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
+class duke(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
     metadata = metadata_base.PrimitiveMetadata({
         # Simply an UUID generated once and fixed forever. Generated using "uuid.uuid4()".
         'id': "46612a42-6120-3559-9db9-3aa9a76eb94f",
@@ -82,20 +83,7 @@ class duke(PrimitiveBase[Inputs, Outputs, Params, Hyperparams]):
     def __init__(self, *, hyperparams: Hyperparams, random_seed: int = 0, volumes: typing.Dict[str,str]=None)-> None:
         super().__init__(hyperparams=hyperparams, random_seed=random_seed, volumes=volumes)
 
-        self._params = {}
         self.volumes = volumes
-
-    def fit(self) -> None:
-        pass
-
-    def get_params(self) -> Params:
-        return self._params
-
-    def set_params(self, *, params: Params) -> None:
-        self.params = params
-
-    def set_training_data(self, *, inputs: Inputs, outputs: Outputs) -> None:
-        pass
 
     def produce(self, *, inputs: Inputs, timeout: float = None, iterations: int = None) -> CallResult[Outputs]:
         """
