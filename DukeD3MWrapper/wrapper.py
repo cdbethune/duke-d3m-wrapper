@@ -55,30 +55,7 @@ class duke(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         },
         # A list of dependencies in order. These can be Python packages, system packages, or Docker images.
         # Of course Python packages can also have their own dependencies, but sometimes it is necessary to
-        # install a Python package first to be even able to run setup.py of anoimport os.path
-import numpy as np
-import pandas
-import pickle
-import requests
-import ast
-import typing
-import pkg_resources
-from json import JSONDecoder
-from typing import List
-
-from Duke.agg_functions import *
-from Duke.dataset_descriptor import DatasetDescriptor
-from Duke.utils import mean_of_rows
-
-from d3m.primitive_interfaces.transformer import TransformerPrimitiveBase
-from d3m.primitive_interfaces.base import CallResult
-
-from d3m import container, utils
-from d3m.container import DataFrame as d3m_DataFrame
-from d3m.metadata import hyperparams, base as metadata_base
-from d3m.primitives.datasets import DatasetToDataFrame
-
-from common_primitives import utils as utils_cpther package. Or you have
+        # install a Python package first to be even able to run setup.py of another package. Or you have
         # a dependency which is not on PyPi.
          'installation': [{
             'type': metadata_base.PrimitiveInstallationType.PIP,
