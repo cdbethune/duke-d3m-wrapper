@@ -113,12 +113,14 @@ class duke(TransformerPrimitiveBase[Inputs, Outputs, Hyperparams]):
         for i in range(frame.shape[1]):
             if (frame.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Integer'):
                 tmp.ix[:,frame.columns[i]].replace('',0,inplace=True)
+                tmp[frame.columns[i]] = pandas.to_numeric(tmp[frame.columns[i]],errors='coerce')
                 # converting a string value like '32.0' to an int directly results in an error, so we first
                 # convert everything to a float
                 tmp = tmp.astype({frame.columns[i]:float})
                 tmp = tmp.astype({frame.columns[i]:int})
             elif (frame.metadata.query_column(i)['semantic_types'][0]=='http://schema.org/Float'):
                 tmp.ix[:,frame.columns[i]].replace('',0,inplace=True)
+                tmp[frame.columns[i]] = pandas.to_numeric(tmp[frame.columns[i]],errors='coerce')
                 tmp = tmp.astype({frame.columns[i]:float})
             # not yet sure if dropping CategoticalData is ideal, but it appears to work...
             # some categorical data may contain useful information, but the d3m transformation is not reversible
