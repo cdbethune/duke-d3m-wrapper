@@ -24,7 +24,7 @@ from d3m.primitives.datasets import DatasetToDataFrame
 from common_primitives import utils as utils_cp
 
 __author__ = 'Distil'
-__version__ = '1.1.4'
+__version__ = '1.1.5'
 
 Inputs = container.pandas.DataFrame
 Outputs = container.pandas.DataFrame
